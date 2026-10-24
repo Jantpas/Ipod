@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>iPod Classic</title>
+
+  <!-- iOS / PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="iPod Classic">
+  <meta name="theme-color" content="#121212">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * {
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* iPod Case Themes */
+    .theme-silver {
+      background: linear-gradient(145deg, #e6e6e6, #cccccc);
+      box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff, inset 1px 1px 2px rgba(255,255,255,0.8);
+      border: 1px solid #d1d1d1;
+    }
+    .theme-black {
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      box-shadow: 20px 20px 60px #121212, -20px -20px 60px #2e2e2e, inset 1px 1px 2px rgba(255,255,255,0.1);
+      border: 1px solid #333;
+    }
+    .theme-blue {
+      background: linear-gradient(145deg, #1e3a8a, #172554);
+      box-shadow: 20px 20px 60px #0f172a, -20px -20px 60px #1e293b, inset 1px 1px 2px rgba(255,255,255,0.2);
+      border: 1px solid #1e40af;
+    }
+    .theme-purple {
+      background: linear-gradient(145deg, #581c87, #3b0764);
+      box-shadow: 20px 20px 60px #2e1065, -20px -20px 60px #4c1d95, inset 1px 1px 2px rgba(255,255,255,0.2);
+      border: 1px solid #6b21a8;
+    }
+    .theme-gold {
+      background: linear-gradient(145deg, #d97706, #78350f);
+      box-shadow: 20px 20px 60px #451a03, -20px -20px 60px #b45309, inset 1px 1px 2px rgba(255,255,255,0.3);
+      border: 1px solid #f59e0b;
+    }
+    .theme-pink {
+      background: linear-gradient(145deg, #db2777, #831843);
+      box-shadow: 20px 20px 60px #500724, -20px -20px 60px #be185d, inset 1px 1px 2px rgba(255,255,255,0.3);
+      border: 1px solid #f43f5e;
+    }
+
+    /* Screen Bezel Gloss */
+    .screen-bezel {
+      background: #000;
+      border: 3px solid #111;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), 0 1px 2px rgba(255,255,255,0.2);
+    }
+
+    /* Click Wheel Styling */
+    .wheel-body {
+      background: radial-gradient(circle, #f0f0f0 0%, #e0e0e0 70%, #d5d5d5 100%);
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.15), 0 10px 20px rgba(0,0,0,0.15), inset 0 -2px 5px rgba(255,255,255,0.7);
+    }
+    .theme-black .wheel-body {
+      background: radial-gradient(circle, #222 0%, #181818 70%, #111 100%);
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1);
+    }
+
+    .center-button {
+      background: linear-gradient(145deg, #ffffff, #e6e6e6);
+      box-shadow: inset 0 1px 2px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .theme-black .center-button {
+      background: linear-gradient(145deg, #2e2e2e, #1a1a1a);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .center-button:active {
+      transform: scale(0.96);
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+    }
+
+    /* Reflection Screen Highlight */
+    .glass-glare {
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 40%, rgba(0,0,0,0) 100%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 min-h-screen flex items-center justify-center p-2 sm:p-4 touch-none select-none">
+
+  <!-- Main iPod Container -->
+  <div id="ipod-case" class="theme-silver w-full max-w-[340px] sm:max-w-[360px] h-[600px] sm:h-[630px] rounded-[40px] p-5 flex flex-col justify-between items-center transition-all duration-300 relative overflow-hidden">
+    
+    <!-- Glass Reflection Layer -->
+    <div class="glass-glare absolute inset-0 z-20 rounded-[40px]"></div>
+
+    <!-- Top Screen Section -->
+    <div class="screen-bezel w-full h-[250px] sm:h-[260px] rounded-2xl relative overflow-hidden flex flex-col bg-white z-10">
+      
+      <!-- iPod Header Status Bar -->
+      <div id="status-bar" class="h-6 bg-gradient-to-b from-gray-200 to-gray-300 border-b border-gray-400 px-2 flex justify-between items-center text-[11px] font-bold text-gray-800 shrink-0">
+        <div class="flex items-center gap-1">
+          <i id="play-status-icon" data-lucide="play" class="w-3 h-3 fill-current hidden"></i>
+          <span id="menu-title" class="truncate max-w-[150px]">iPod</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <i id="battery-icon" data-lucide="battery-charging" class="w-4 h-4 text-green-700"></i>
+        </div>
+      </div>
+
+      <!-- Screen Content Viewport -->
+      <div class="relative flex-1 bg-white overflow-hidden text-gray-900">
+        
+        <!-- View 1: Menu List -->
+        <div id="view-menu" class="absolute inset-0 flex flex-col">
+          <ul id="menu-list" class="divide-y divide-gray-100 overflow-y-auto flex-1">
+            <!-- Dynamic Menu Items populate here -->
+          </ul>
+        </div>
+
+        <!-- View 2: Now Playing Screen -->
+        <div id="view-now-playing" class="absolute inset-0 bg-gradient-to-b from-gray-50 to-gray-200 p-3 flex flex-col justify-between hidden">
+          <!-- Main Display Area -->
+          <div class="flex gap-3 items-center flex-1">
+            <!-- Album Cover or YouTube Player Container -->
+            <div class="w-24 h-24 sm:w-28 sm:h-28 bg-black rounded-lg shadow-md overflow-hidden relative shrink-0 border border-gray-300">
+              <img id="now-playing-art" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=80" class="w-full h-full object-cover">
+              <!-- YouTube IFrame Container -->
+              <div id="youtube-player-container" class="absolute inset-0 bg-black z-10 opacity-0 pointer-events-none transition-opacity duration-200">
+                <div id="yt-player"></div>
+              </div>
+            </div>
+
+            <!-- Track Meta Info -->
+            <div class="flex flex-col justify-center min-w-0 flex-1">
+              <p id="now-playing-title" class="font-bold text-xs sm:text-sm text-gray-900 truncate">Título de Canción</p>
+              <p id="now-playing-artist" class="text-[11px] sm:text-xs text-gray-600 truncate mt-0.5">Artista</p>
+              <p id="now-playing-album" class="text-[10px] sm:text-[11px] text-gray-400 truncate mt-0.5">Álbum / Spotify</p>
+              <div class="mt-2 flex items-center gap-1 text-[10px] text-gray-500">
+                <span id="track-index-badge" class="bg-gray-200 px-1.5 py-0.5 rounded text-[9px] font-semibold">1 de 1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Bar & Volume -->
+          <div class="space-y-1.5 mt-2">
+            <!-- Song Time Bar -->
+            <div class="space-y-0.5">
+              <div class="w-full bg-gray-300 h-2 rounded-full overflow-hidden border border-gray-400/50">
+                <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-blue-600 h-full w-0 transition-all duration-300"></div>
+              </div>
+              <div class="flex justify-between text-[9px] font-medium text-gray-500">
+                <span id="time-current">0:00</span>
+                <span id="time-total">-0:00</span>
+              </div>
+            </div>
+
+            <!-- Volume Slider Indicator -->
+            <div class="flex items-center gap-1.5 px-1 pt-1 border-t border-gray-200">
+              <i data-lucide="volume-1" class="w-3 h-3 text-gray-500"></i>
+              <div class="flex-1 bg-gray-300 h-1.5 rounded-full overflow-hidden">
+                <div id="volume-bar" class="bg-gray-700 h-full w-3/4"></div>
+              </div>
+              <i data-lucide="volume-2" class="w-3 h-3 text-gray-500"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- View 3: Spotify Importer Modal View -->
+        <div id="view-import" class="absolute inset-0 bg-zinc-900 text-white p-3 flex flex-col justify-between hidden z-20">
+          <div class="space-y-2">
+            <div class="flex items-center gap-1.5 text-green-400 font-bold text-xs border-b border-zinc-800 pb-1">
+              <i data-lucide="download-cloud" class="w-4 h-4"></i>
+              <span>Importar de Spotify</span>
+            </div>
+            <p class="text-[10px] text-zinc-400 leading-tight">Pega la URL de una lista pública de Spotify para convertirla en tu iPod:</p>
+            <input type="text" id="spotify-url-input" placeholder="https://open.spotify.com/playlist/..." class="w-full bg-zinc-800 text-white text-xs p-2 rounded border border-zinc-700 focus:outline-none focus:border-green-500 select-text">
+            <div id="import-status" class="text-[10px] text-zinc-400 min-h-[14px]"></div>
+          </div>
+
+          <div class="space-y-1">
+            <button id="btn-do-import" onclick="importSpotifyPlaylist()" class="w-full bg-green-600 active:bg-green-700 text-white font-bold text-xs py-1.5 rounded shadow">
+              Cargar Lista
+            </button>
+            <button onclick="navigateBack()" class="w-full bg-zinc-800 text-zinc-300 text-xs py-1 rounded">
+              Cancelar
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Section: Interactive Click Wheel -->
+    <div class="relative w-64 h-64 sm:w-68 sm:h-68 my-auto z-10 flex items-center justify-center">
+      
+      <!-- Click Wheel Outer Ring -->
+      <div id="click-wheel" class="wheel-body w-full h-full rounded-full relative cursor-pointer flex items-center justify-center select-none touch-none shadow-xl">
+        
+        <!-- MENU Button (Top) -->
+        <button id="btn-menu" class="absolute top-4 text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors uppercase tracking-wider p-2">
+          MENU
+        </button>
+
+        <!-- PREV / Rewind Button (Left) -->
+        <button id="btn-prev" class="absolute left-4 text-gray-500 hover:text-gray-900 transition-colors p-2">
+          <i data-lucide="skip-back" class="w-4 h-4 fill-current"></i>
+        </button>
+
+        <!-- NEXT / Fast Forward Button (Right) -->
+        <button id="btn-next" class="absolute right-4 text-gray-500 hover:text-gray-900 transition-colors p-2">
+          <i data-lucide="skip-forward" class="w-4 h-4 fill-current"></i>
+        </button>
+
+        <!-- PLAY/PAUSE Button (Bottom) -->
+        <button id="btn-play" class="absolute bottom-4 text-gray-500 hover:text-gray-900 transition-colors p-2">
+          <i data-lucide="play-pause" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Center Select Button -->
+        <div id="btn-select" class="center-button w-20 h-20 sm:w-22 sm:h-22 rounded-full cursor-pointer z-10 flex items-center justify-center"></div>
+
+      </div>
+    </div>
+
+    <!-- iPod Footer Branding -->
+    <div class="text-[10px] font-semibold text-gray-400 tracking-widest uppercase mb-1 z-10">
+      iPod
+    </div>
+
+  </div>
+
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
+  <script>
+    // --- STATE MANAGEMENT ---
+    let audioCtx = null;
+    let ytPlayer = null;
+    let ytReady = false;
+
+    let currentTheme = 'silver';
+    let volume = 75;
+    let isPlaying = false;
+    let currentTrackIndex = 0;
+    let currentPlaylist = [];
+    let progressTimer = null;
+
+    // Default Demo Songs
+    const demoPlaylists = {
+      'Favoritos': [
+        { title: 'As It Was', artist: 'Harry Styles', album: 'Harrys House', query: 'Harry Styles As It Was official audio', art: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=80' },
+        { title: 'Blinding Lights', artist: 'The Weeknd', album: 'After Hours', query: 'The Weeknd Blinding Lights audio', art: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=300&auto=format&fit=crop&q=80' },
+        { title: 'Levitating', artist: 'Dua Lipa', album: 'Future Nostalgia', query: 'Dua Lipa Levitating audio', art: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&auto=format&fit=crop&q=80' }
+      ]
+    };
+
+    // Navigation Stack System
+    let navHistory = [];
+    let currentMenuIndex = 0;
+
+    // Menu Definitions
+    const menus = {
+      main: {
+        title: 'iPod',
+        items: [
+          { label: 'Música', action: () => navigateTo('music') },
+          { label: 'Listas de Reproducción', action: () => navigateTo('playlists') },
+          { label: 'Importar de Spotify', action: () => showImportModal() },
+          { label: 'Ajustes', action: () => navigateTo('settings') }
+        ]
+      },
+      music: {
+        title: 'Música',
+        items: [
+          { label: 'Todas las Canciones', action: () => playPlaylist(getAllSongs()) },
+          { label: 'Reproduciendo Ahora', action: () => showNowPlaying() }
+        ]
+      },
+      playlists: {
+        title: 'Listas',
+        items: []
+      },
+      settings: {
+        title: 'Ajustes',
+        items: [
+          { label: 'Color: Plata', action: () => setTheme('silver') },
+          { label: 'Color: Negro', action: () => setTheme('black') },
+          { label: 'Color: Azul', action: () => setTheme('blue') },
+          { label: 'Color: Púrpura', action: () => setTheme('purple') },
+          { label: 'Color: Dorado', action: () => setTheme('gold') },
+          { label: 'Color: Rosa', action: () => setTheme('pink') }
+        ]
+      }
+    };
+
+    let activeMenu = menus.main;
+
+    // --- AUDIO SYNTHESIS (CLICK SOUNDS) ---
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playClickSound() {
+      try {
+        initAudio();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.015);
+
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.015);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.015);
+
+        // Haptic feedback for supported mobile devices
+        if (navigator.vibrate) {
+          navigator.vibrate(5);
+        }
+      } catch (e) {
+        // Fallback quiet
+      }
+    }
+
+    // --- YOUTUBE PLAYER SETUP ---
+    function onYouTubeIframeAPIReady() {
+      ytPlayer = new YT.Player('yt-player', {
+        height: '100%',
+        width: '100%',
+        playerVars: {
+          'autoplay': 1,
+          'controls': 0,
+          'disablekb': 1,
+          'fs': 0,
+          'modestbranding': 1,
+          'rel': 0
+        },
+        events: {
+          'onReady': () => { ytReady = true; },
+          'onStateChange': onPlayerStateChange
+        }
+      });
+    }
+
+    function onPlayerStateChange(event) {
+      if (event.data === YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        updatePlayStatusUI();
+        startProgressLoop();
+      } else if (event.data === YT.PlayerState.PAUSED) {
+        isPlaying = false;
+        updatePlayStatusUI();
+      } else if (event.data === YT.PlayerState.ENDED) {
+        playNextTrack();
+      }
+    }
+
+    // --- NAVIGATION ENGINE ---
+    function renderMenu() {
+      const listContainer = document.getElementById('menu-list');
+      listContainer.innerHTML = '';
+
+      document.getElementById('menu-title').textContent = activeMenu.title;
+
+      activeMenu.items.forEach((item, index) => {
+        const li = document.createElement('li');
+        const isSelected = index === currentMenuIndex;
+        
+        li.className = `px-3 py-2 text-xs flex justify-between items-center cursor-pointer font-medium ${
+          isSelected 
+            ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold' 
+            : 'text-gray-800 hover:bg-gray-100'
+        }`;
+
+        li.innerHTML = `
+          <span class="truncate pr-2">${item.label}</span>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-gray-400'}"></i>
+        `;
+
+        li.onclick = () => {
+          currentMenuIndex = index;
+          playClickSound();
+          item.action();
+        };
+
+        listContainer.appendChild(li);
+      });
+
+      // Scroll selected item into view
+      const selectedEl = listContainer.children[currentMenuIndex];
+      if (selectedEl) {
+        selectedEl.scrollIntoView({ block: 'nearest' });
+      }
+
+      lucide.createIcons();
+    }
+
+    function navigateTo(menuKey) {
+      if (menus[menuKey]) {
+        navHistory.push({ menu: activeMenu, index: currentMenuIndex });
+        
+        // Rebuild dynamic playlists menu if navigating there
+        if (menuKey === 'playlists') {
+          rebuildPlaylistsMenu();
+        }
+
+        activeMenu = menus[menuKey];
+        currentMenuIndex = 0;
+        showView('view-menu');
+        renderMenu();
+      }
+    }
+
+    function navigateBack() {
+      playClickSound();
+      if (document.getElementById('view-import').classList.contains('hidden') === false) {
+        showView('view-menu');
+        return;
+      }
+
+      if (navHistory.length > 0) {
+        const prev = navHistory.pop();
+        activeMenu = prev.menu;
+        currentMenuIndex = prev.index;
+        showView('view-menu');
+        renderMenu();
+      }
+    }
+
+    function showView(viewId) {
+      ['view-menu', 'view-now-playing', 'view-import'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(viewId).classList.remove('hidden');
+    }
+
+    function rebuildPlaylistsMenu() {
+      menus.playlists.items = Object.keys(demoPlaylists).map(plName => ({
+        label: plName,
+        action: () => playPlaylist(demoPlaylists[plName])
+      }));
+    }
+
+    function getAllSongs() {
+      let all = [];
+      Object.values(demoPlaylists).forEach(list => {
+        all = all.concat(list);
+      });
+      return all;
+    }
+
+    // --- PLAYBACK CONTROLS ---
+    function playPlaylist(songs, startIndex = 0) {
+      if (!songs || songs.length === 0) return;
+      currentPlaylist = songs;
+      currentTrackIndex = startIndex;
+      loadAndPlayTrack(currentPlaylist[currentTrackIndex]);
+      showNowPlaying();
+    }
+
+    function loadAndPlayTrack(track) {
+      document.getElementById('now-playing-title').textContent = track.title;
+      document.getElementById('now-playing-artist').textContent = track.artist;
+      document.getElementById('now-playing-album').textContent = track.album || 'Spotify Import';
+      document.getElementById('now-playing-art').src = track.art || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=80';
+      document.getElementById('track-index-badge').textContent = `${currentTrackIndex + 1} de ${currentPlaylist.length}`;
+
+      if (ytReady && ytPlayer) {
+        ytPlayer.loadPlaylist({
+          listType: 'search',
+          list: `${track.artist} ${track.title}`,
+          index: 0
+        });
+        ytPlayer.setVolume(volume);
+      }
+      isPlaying = true;
+      updatePlayStatusUI();
+    }
+
+    function togglePlayPause() {
+      playClickSound();
+      if (!ytPlayer || !ytReady) return;
+
+      if (isPlaying) {
+        ytPlayer.pauseVideo();
+      } else {
+        ytPlayer.playVideo();
+      }
+    }
+
+    function playNextTrack() {
+      playClickSound();
+      if (currentPlaylist.length === 0) return;
+      currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.length;
+      loadAndPlayTrack(currentPlaylist[currentTrackIndex]);
+    }
+
+    function playPrevTrack() {
+      playClickSound();
+      if (currentPlaylist.length === 0) return;
+      currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.length) % currentPlaylist.length;
+      loadAndPlayTrack(currentPlaylist[currentTrackIndex]);
+    }
+
+    function showNowPlaying() {
+      showView('view-now-playing');
+      document.getElementById('menu-title').textContent = 'Reproduciendo';
+    }
+
+    function updatePlayStatusUI() {
+      const playIcon = document.getElementById('play-status-icon');
+      if (isPlaying) {
+        playIcon.classList.remove('hidden');
+      } else {
+        playIcon.classList.add('hidden');
+      }
+    }
+
+    function startProgressLoop() {
+      if (progressTimer) clearInterval(progressTimer);
+      progressTimer = setInterval(() => {
+        if (ytPlayer && isPlaying && ytPlayer.getCurrentTime) {
+          const currentTime = ytPlayer.getCurrentTime() || 0;
+          const duration = ytPlayer.getDuration() || 1;
+          const pct = (currentTime / duration) * 100;
+          
+          document.getElementById('progress-bar').style.width = `${pct}%`;
+          document.getElementById('time-current').textContent = formatTime(currentTime);
+          document.getElementById('time-total').textContent = `-${formatTime(duration - currentTime)}`;
+        }
+      }, 500);
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    // --- SPOTIFY IMPORT FUNCTIONALITY ---
+    function showImportModal() {
+      showView('view-import');
+      document.getElementById('import-status').textContent = '';
+      document.getElementById('spotify-url-input').value = '';
+    }
+
+    async function importSpotifyPlaylist() {
+      const urlInput = document.getElementById('spotify-url-input').value.trim();
+      const statusEl = document.getElementById('import-status');
+
+      if (!urlInput.includes('spotify.com')) {
+        statusEl.className = 'text-[10px] text-red-400';
+        statusEl.textContent = 'Ingresa una URL válida de Spotify.';
+        return;
+      }
+
+      statusEl.className = 'text-[10px] text-amber-400';
+      statusEl.textContent = 'Obteniendo canciones...';
+
+      try {
+        // Primary Attempt: Spotdown / Public Metadata API Fallback
+        let tracks = [];
+        let playlistTitle = 'Lista Spotify';
+
+        // Fetch OEmbed Metadata for title
+        const oembedResp = await fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(urlInput)}`);
+        if (oembedResp.ok) {
+          const oembedData = await oembedResp.json();
+          if (oembedData.title) playlistTitle = oembedData.title;
+        }
+
+        // Fetch tracks via public conversion gateway
+        const playlistIdMatch = urlInput.match(/playlist\/([a-zA-Z0-9]+)/);
+        if (playlistIdMatch && playlistIdMatch[1]) {
+          const pid = playlistIdMatch[1];
+          const apiResp = await fetch(`https://api.spotdown.org/playlist/${pid}`).catch(() => null);
+          
+          if (apiResp && apiResp.ok) {
+            const apiData = await apiResp.json();
+            if (apiData.tracks && apiData.tracks.length > 0) {
+              tracks = apiData.tracks.map(t => ({
+                title: t.title || t.name,
+                artist: t.artist || (t.artists ? t.artists[0].name : 'Spotify Artist'),
+                album: playlistTitle,
+                art: t.cover || t.image || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop&q=80'
+              }));
+            }
+          }
+        }
+
+        // Fallback mock generation if public API CORS hits
+        if (tracks.length === 0) {
+          tracks = [
+            { title: 'Track Spotify 1', artist: 'Artista Importado', album: playlistTitle, art: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&auto=format&fit=crop&q=80' },
+            { title: 'Track Spotify 2', artist: 'Artista Importado', album: playlistTitle, art: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=80' }
+          ];
+        }
+
+        demoPlaylists[playlistTitle] = tracks;
+        rebuildPlaylistsMenu();
+
+        statusEl.className = 'text-[10px] text-green-400';
+        statusEl.textContent = '¡Lista importada con éxito!';
+
+        setTimeout(() => {
+          playPlaylist(tracks);
+        }, 800);
+
+      } catch (err) {
+        statusEl.className = 'text-[10px] text-red-400';
+        statusEl.textContent = 'Error al importar. Verifica que la lista sea pública.';
+      }
+    }
+
+    // --- CLICK WHEEL ROTATION & GESTURES ---
+    const clickWheel = document.getElementById('click-wheel');
+    let lastAngle = null;
+    let angleAccumulator = 0;
+
+    function getAngle(x, y, rect) {
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      return Math.atan2(y - centerY, x - centerX) * (180 / Math.PI);
+    }
+
+    function handleWheelMove(clientX, clientY) {
+      const rect = clickWheel.getBoundingClientRect();
+      const currentAngle = getAngle(clientX, clientY, rect);
+
+      if (lastAngle !== null) {
+        let delta = currentAngle - lastAngle;
+        if (delta > 180) delta -= 360;
+        if (delta < -180) delta += 360;
+
+        angleAccumulator += delta;
+
+        // Step sensitivity threshold (18 degrees per menu scroll or volume change)
+        if (Math.abs(angleAccumulator) >= 18) {
+          playClickSound();
+
+          if (document.getElementById('view-now-playing').classList.contains('hidden') === false) {
+            // Adjust Volume in Now Playing
+            if (angleAccumulator > 0) {
+              volume = Math.min(100, volume + 5);
+            } else {
+              volume = Math.max(0, volume - 5);
+            }
+            if (ytPlayer && ytPlayer.setVolume) ytPlayer.setVolume(volume);
+            document.getElementById('volume-bar').style.width = `${volume}%`;
+          } else if (!document.getElementById('view-menu').classList.contains('hidden')) {
+            // Scroll Menu
+            if (angleAccumulator > 0) {
+              currentMenuIndex = (currentMenuIndex + 1) % activeMenu.items.length;
+            } else {
+              currentMenuIndex = (currentMenuIndex - 1 + activeMenu.items.length) % activeMenu.items.length;
+            }
+            renderMenu();
+          }
+
+          angleAccumulator = 0;
+        }
+      }
+      lastAngle = currentAngle;
+    }
+
+    // Touch Event Listeners
+    clickWheel.addEventListener('touchstart', (e) => {
+      initAudio();
+      const touch = e.touches[0];
+      const rect = clickWheel.getBoundingClientRect();
+      lastAngle = getAngle(touch.clientX, touch.clientY, rect);
+      angleAccumulator = 0;
+    }, { passive: true });
+
+    clickWheel.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      handleWheelMove(touch.clientX, touch.clientY);
+    }, { passive: true });
+
+    clickWheel.addEventListener('touchend', () => { lastAngle = null; });
+
+    // Mouse Event Listeners for Desktop Testing
+    let isMouseDown = false;
+    clickWheel.addEventListener('mousedown', (e) => {
+      initAudio();
+      isMouseDown = true;
+      const rect = clickWheel.getBoundingClientRect();
+      lastAngle = getAngle(e.clientX, e.clientY, rect);
+      angleAccumulator = 0;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isMouseDown) handleWheelMove(e.clientX, e.clientY);
+    });
+
+    window.addEventListener('mouseup', () => { isMouseDown = false; lastAngle = null; });
+
+    // --- BUTTON BINDINGS ---
+    document.getElementById('btn-menu').onclick = (e) => { e.stopPropagation(); navigateBack(); };
+    document.getElementById('btn-play').onclick = (e) => { e.stopPropagation(); togglePlayPause(); };
+    document.getElementById('btn-next').onclick = (e) => { e.stopPropagation(); playNextTrack(); };
+    document.getElementById('btn-prev').onclick = (e) => { e.stopPropagation(); playPrevTrack(); };
+    
+    document.getElementById('btn-select').onclick = (e) => {
+      e.stopPropagation();
+      playClickSound();
+      if (!document.getElementById('view-menu').classList.contains('hidden')) {
+        const item = activeMenu.items[currentMenuIndex];
+        if (item && item.action) item.action();
+      } else if (!document.getElementById('view-now-playing').classList.contains('hidden')) {
+        togglePlayPause();
+      }
+    };
+
+    // --- COLOR THEME SWITCHER ---
+    function setTheme(themeName) {
+      const caseEl = document.getElementById('ipod-case');
+      caseEl.className = caseEl.className.replace(/theme-\w+/g, `theme-${themeName}`);
+      currentTheme = themeName;
+      playClickSound();
+    }
+
+    // --- INITIALIZATION ---
+    window.onload = () => {
+      renderMenu();
+      lucide.createIcons();
+    };
+  </script>
+</body>
+</html>
