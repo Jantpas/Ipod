@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Chicago&family=Inter:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
     body {
       user-select: none;
@@ -120,12 +120,13 @@
       menuHistory: [],
       currentMenu: 'main',
       selectedIndex: 0,
-      playlist: [],
+      playlist: JSON.parse(localStorage.getItem('ipod_playlist')) || [
+        { title: 'Billie Jean', artist: 'Michael Jackson' },
+        { title: 'Starboy', artist: 'The Weeknd' }
+      ],
       currentTrackIndex: -1,
       isPlaying: false,
-      volume: 80,
       theme: 'silver',
-      youtubeReady: false,
       player: null
     };
 
@@ -135,14 +136,14 @@
         title: 'iPod',
         items: [
           { label: 'Música', action: () => navigateTo('music') },
-          { label: 'Importar Spotify', action: () => navigateTo('import') },
+          { label: 'Añadir canción', action: () => navigateTo('addSong') },
           { label: 'Ajustes', action: () => navigateTo('settings') }
         ]
       },
       music: {
         title: 'Música',
         items: [
-          { label: 'Canciones', action: () => playCurrentPlaylist() },
+          { label: 'Todas las canciones', action: () => playCurrentPlaylist() },
           { label: 'Reproduciendo ahora', action: () => navigateTo('nowPlaying') }
         ]
       },
@@ -182,77 +183,6 @@
       if (navigator.vibrate) navigator.vibrate(10);
     }
 
-    // --- IMPORTACIÓN DE SPOTIFY REAL ---
-    async function importSpotifyPlaylist(url) {
-      const content = document.getElementById('screen-content');
-      content.innerHTML = `
-        <div class="p-4 text-center text-xs space-y-2">
-          <i class="fas fa-spinner fa-spin text-2xl text-blue-500 my-2"></i>
-          <p class="font-bold">Procesando lista de Spotify...</p>
-          <p class="text-[10px] text-gray-500">Obteniendo canciones reales...</p>
-        </div>
-      `;
-
-      // Extraer ID de la lista
-      const match = url.match(/playlist\/([a-zA-Z0-9]+)/);
-      if (!match) {
-        alert('URL de Spotify no válida. Copia un enlace público de playlist.');
-        renderMenu();
-        return;
-      }
-      const playlistId = match[1];
-
-      try {
-        // Intento 1: Pasarela JSON pública
-        let response = await fetch(`https://api.spotifycdn.com/playlist/${playlistId}`).catch(() => null);
-        let tracks = [];
-
-        if (response && response.ok) {
-          const data = await response.json();
-          if (data && data.tracks) {
-            tracks = data.tracks.map(t => ({ title: t.title || t.name, artist: t.artist }));
-          }
-        }
-
-        // Intento 2 (Respaldo): Scraper Embed
-        if (tracks.length === 0) {
-          const embedRes = await fetch(`https://open.spotify.com/embed/playlist/${playlistId}`);
-          const htmlText = await embedRes.text();
-          
-          // Extraer JSON embebido en la página
-          const jsonMatch = htmlText.match(/<script id="session" type="application\/json">(.*?)<\/script>/s) ||
-                            htmlText.match(/<script id="initial-state" type="application\/json">(.*?)<\/script>/s);
-          
-          if (jsonMatch) {
-            const parsed = JSON.parse(jsonMatch[1]);
-            // Buscar entidades de canciones
-            const trackList = parsed?.data?.entity?.trackList || [];
-            tracks = trackList.map(t => ({
-              title: t.title || t.name,
-              artist: t.subtitle || t.artists?.[0]?.name || 'Artista'
-            }));
-          } else {
-            // Regex básico sobre el HTML si no hay script JSON
-            const titleMatches = [...htmlText.matchAll(/data-name="([^"]+)"[\s\S]*?data-artist="([^"]+)"/g)];
-            tracks = titleMatches.map(m => ({ title: m[1], artist: m[2] }));
-          }
-        }
-
-        if (tracks.length > 0) {
-          state.playlist = tracks;
-          state.selectedIndex = 0;
-          alert(`¡Lista importada con éxito! Se cargaron ${tracks.length} canciones.`);
-          playTrack(0);
-        } else {
-          throw new Error('No se encontraron canciones públicas en esta playlist.');
-        }
-
-      } catch (err) {
-        alert('Error al leer la lista. Asegúrate de que sea una lista PÚBLICA de Spotify.');
-        renderMenu();
-      }
-    }
-
     // --- REPRODUCCIÓN VÍA YOUTUBE ---
     function onYouTubeIframeAPIReady() {
       state.player = new YT.Player('youtube-player', {
@@ -286,7 +216,6 @@
 
       navigateTo('nowPlaying');
 
-      // Buscar en YouTube
       const query = encodeURIComponent(`${track.title} ${track.artist} audio`);
       try {
         const res = await fetch(`https://www.youtube.com/results?search_query=${query}`);
@@ -320,8 +249,8 @@
 
     // --- NAVEGACIÓN Y RENDERIZADO ---
     function navigateTo(menuKey) {
-      if (menuKey === 'import') {
-        renderImportScreen();
+      if (menuKey === 'addSong') {
+        renderAddSongScreen();
         return;
       }
       state.menuHistory.push({ menu: state.currentMenu, index: state.selectedIndex });
@@ -375,24 +304,35 @@
       });
     }
 
-    function renderImportScreen() {
-      document.getElementById('screen-title').innerText = 'Importar Spotify';
+    function renderAddSongScreen() {
+      document.getElementById('screen-title').innerText = 'Añadir canción';
       const content = document.getElementById('screen-content');
       content.innerHTML = `
         <div class="p-3 text-xs space-y-2">
-          <p class="font-bold text-gray-700">Pega el enlace de la Playlist:</p>
-          <input type="text" id="spotify-url-input" placeholder="https://open.spotify.com/playlist/..." 
-                 class="w-full p-2 border rounded text-[10px] text-gray-800 bg-white focus:outline-none border-blue-400">
-          <button id="btn-import-submit" class="w-full bg-blue-600 text-white py-1.5 rounded font-bold hover:bg-blue-700 transition">
-            Importar Canciones
+          <p class="font-bold text-gray-700">Título de la canción:</p>
+          <input type="text" id="song-title-input" placeholder="Ej. Despacito" 
+                 class="w-full p-1.5 border rounded text-[11px] text-gray-800 bg-white focus:outline-none border-blue-400">
+          <p class="font-bold text-gray-700">Artista:</p>
+          <input type="text" id="song-artist-input" placeholder="Ej. Luis Fonsi" 
+                 class="w-full p-1.5 border rounded text-[11px] text-gray-800 bg-white focus:outline-none border-blue-400">
+          <button id="btn-save-song" class="w-full bg-blue-600 text-white py-1.5 rounded font-bold hover:bg-blue-700 transition mt-1">
+            Guardar en el iPod
           </button>
         </div>
       `;
 
       setTimeout(() => {
-        document.getElementById('btn-import-submit').addEventListener('click', () => {
-          const url = document.getElementById('spotify-url-input').value.trim();
-          if (url) importSpotifyPlaylist(url);
+        document.getElementById('btn-save-song').addEventListener('click', () => {
+          const title = document.getElementById('song-title-input').value.trim();
+          const artist = document.getElementById('song-artist-input').value.trim();
+          if (title && artist) {
+            state.playlist.push({ title, artist });
+            localStorage.setItem('ipod_playlist', JSON.stringify(state.playlist));
+            alert(`¡"${title}" añadida con éxito!`);
+            navigateTo('music');
+          } else {
+            alert('Por favor, rellena ambos campos.');
+          }
         });
       }, 50);
     }
@@ -416,8 +356,8 @@
               <div class="bg-blue-600 h-full w-1/3"></div>
             </div>
             <div class="flex justify-between text-[9px] text-gray-500">
-              <span>1:15</span>
-              <span>3:40</span>
+              <span>Reproduciendo</span>
+              <span>YouTube Audio</span>
             </div>
           </div>
         </div>
@@ -445,7 +385,7 @@
       const currentAngle = Math.atan2(touch.clientY - (rect.top + rect.height/2), touch.clientX - (rect.left + rect.width/2));
       const diff = currentAngle - startAngle;
 
-      if (Math.abs(diff) > 0.4) { // Sensibilidad del giro
+      if (Math.abs(diff) > 0.4) {
         playClickSound();
         triggerHaptic();
 
@@ -462,12 +402,11 @@
       }
     });
 
-    // Botones de la Rueda
     document.getElementById('btn-center').addEventListener('click', () => {
       playClickSound();
       triggerHaptic();
 
-      if (state.currentMenu === 'import') return;
+      if (state.currentMenu === 'addSong') return;
 
       const menu = menus[state.currentMenu];
       if (state.currentMenu === 'music' && state.playlist.length > 0) {
