@@ -2,255 +2,99 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>iPod Classic</title>
-
-  <!-- Meta Tags para iOS / PWA -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="iPod Classic">
-  <meta name="theme-color" content="#121212">
-
+  
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
     body {
       user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #0d0d0d;
-      color: #333;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-
-    /* Carcasas de Aluminio */
     .casing-silver { background: linear-gradient(145deg, #e6e6e6, #cccccc); }
     .casing-black  { background: linear-gradient(145deg, #2a2a2a, #141414); }
-    .casing-blue   { background: linear-gradient(145deg, #3a7bd5, #3a6073); }
-    .casing-purple { background: linear-gradient(145deg, #8e2de2, #4a00e0); }
-    .casing-gold   { background: linear-gradient(145deg, #f7971e, #ffd200); }
-    .casing-pink   { background: linear-gradient(145deg, #ff758c, #ff7eb3); }
-
-    .wheel-shadow {
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.2), 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    .lcd-screen {
-      background: #e0e8f0;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.15);
-    }
-
-    .menu-item-selected {
-      background: linear-gradient(180deg, #3388e6 0%, #0055b3 100%);
-      color: white;
-    }
-
-    /* Ocultar barra de scroll */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .wheel-shadow { box-shadow: inset 0 2px 5px rgba(0,0,0,0.2), 0 4px 10px rgba(0,0,0,0.3); }
+    .lcd-screen { background: #e0e8f0; box-shadow: inset 0 0 10px rgba(0,0,0,0.15); }
+    .menu-item-selected { background: linear-gradient(180deg, #3388e6 0%, #0055b3 100%); color: white; }
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4 sm:p-0">
+<body>
 
-  <!-- Estructura del iPod -->
-  <div id="ipod-case" class="casing-silver w-[340px] h-[580px] rounded-[38px] p-6 flex flex-col justify-between shadow-2xl relative border border-white/20 transition-all duration-300">
+  <!-- iPod Estructura -->
+  <div id="ipod-case" class="casing-silver w-[340px] h-[580px] rounded-[38px] p-6 flex flex-col justify-between shadow-2xl relative border border-white/20">
     
-    <!-- Pantalla LCD -->
+    <!-- Pantalla -->
     <div class="lcd-screen w-full h-[240px] rounded-lg border-2 border-gray-400/50 overflow-hidden flex flex-col relative text-gray-800">
-      
-      <!-- Barra Superior (Header) -->
       <div class="h-7 bg-gradient-to-b from-gray-200 to-gray-300 border-b border-gray-400 flex items-center justify-between px-3 text-xs font-semibold">
-        <span id="screen-title" class="truncate max-w-[180px]">iPod</span>
-        <div class="flex items-center space-x-2">
-          <i id="play-status-icon" class="fas fa-pause text-[10px] hidden"></i>
-          <i class="fas fa-battery-three-quarters text-xs text-gray-700"></i>
+        <span id="screen-title">iPod</span>
+        <i class="fas fa-battery-three-quarters text-xs text-gray-700"></i>
+      </div>
+      <div id="screen-content" class="flex-1 overflow-y-auto p-2"></div>
+    </div>
+
+    <!-- Click Wheel -->
+    <div class="flex justify-center my-2">
+      <div class="w-[210px] h-[210px] rounded-full bg-white wheel-shadow relative flex items-center justify-center">
+        <button id="btn-menu" class="absolute top-3 font-bold text-gray-600 text-xs p-2">MENU</button>
+        <button id="btn-prev" class="absolute left-3 text-gray-600 text-xs p-3"><i class="fas fa-backward"></i></button>
+        <button id="btn-next" class="absolute right-3 text-gray-600 text-xs p-3"><i class="fas fa-forward"></i></button>
+        <button id="btn-play" class="absolute bottom-3 text-gray-600 text-xs p-2"><i class="fas fa-play"></i>/<i class="fas fa-pause"></i></button>
+        
+        <div id="btn-center" class="w-[75px] h-[75px] rounded-full bg-gradient-to-b from-gray-100 to-gray-300 border border-gray-300 cursor-pointer active:scale-95 transition flex items-center justify-center">
+          <span class="text-[10px] font-bold text-gray-500">SELECT</span>
         </div>
       </div>
-
-      <!-- Contenido Dinámico de Pantalla -->
-      <div id="screen-content" class="flex-1 overflow-y-auto no-scrollbar relative">
-        <!-- Rellenado por JS -->
-      </div>
-    </div>
-
-    <!-- Rueda Click Wheel -->
-    <div class="flex justify-center my-2">
-      <div id="click-wheel" class="w-[210px] h-[210px] rounded-full bg-white wheel-shadow relative flex items-center justify-center cursor-pointer select-none">
-        
-        <!-- Botón MENU -->
-        <button id="btn-menu" class="absolute top-3 font-bold text-gray-500 text-xs hover:text-black transition">MENU</button>
-        
-        <!-- Botón Anterior / Retroceder -->
-        <button id="btn-prev" class="absolute left-4 text-gray-500 text-xs hover:text-black transition">
-          <i class="fas fa-backward"></i>
-        </button>
-        
-        <!-- Botón Siguiente / Adelantar -->
-        <button id="btn-next" class="absolute right-4 text-gray-500 text-xs hover:text-black transition">
-          <i class="fas fa-forward"></i>
-        </button>
-        
-        <!-- Botón Play / Pausa -->
-        <button id="btn-play" class="absolute bottom-3 text-gray-500 text-xs hover:text-black transition">
-          <i class="fas fa-play"></i> <i class="fas fa-pause"></i>
-        </button>
-        
-        <!-- Botón Central (Select) -->
-        <div id="btn-center" class="w-[75px] h-[75px] rounded-full bg-gradient-to-b from-gray-100 to-gray-300 border border-gray-300 active:scale-95 transition shadow-sm"></div>
-      </div>
     </div>
   </div>
-
-  <!-- Reproductor Oculto de YouTube para Audio -->
-  <div class="hidden">
-    <div id="youtube-player"></div>
-  </div>
-
-  <!-- API de YouTube -->
-  <script src="https://www.youtube.com/iframe_api"></script>
 
   <script>
-    // --- ESTADO DE LA APLICACIÓN ---
     const state = {
       menuHistory: [],
       currentMenu: 'main',
       selectedIndex: 0,
       playlist: JSON.parse(localStorage.getItem('ipod_playlist')) || [
-        { title: 'Billie Jean', artist: 'Michael Jackson' },
-        { title: 'Starboy', artist: 'The Weeknd' }
+        { title: 'Billie Jean', artist: 'Michael Jackson', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+        { title: 'Starboy', artist: 'The Weeknd', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' }
       ],
       currentTrackIndex: -1,
       isPlaying: false,
-      theme: 'silver',
-      player: null
+      audio: new Audio()
     };
 
-    // --- MENÚS ---
     const menus = {
       main: {
         title: 'iPod',
         items: [
           { label: 'Música', action: () => navigateTo('music') },
           { label: 'Añadir canción', action: () => navigateTo('addSong') },
-          { label: 'Ajustes', action: () => navigateTo('settings') }
+          { label: 'Cambiar Color', action: () => toggleTheme() }
         ]
       },
-      music: {
-        title: 'Música',
-        items: [
-          { label: 'Todas las canciones', action: () => playCurrentPlaylist() },
-          { label: 'Reproduciendo ahora', action: () => navigateTo('nowPlaying') }
-        ]
-      },
-      settings: {
-        title: 'Ajustes',
-        items: [
-          { label: 'Color: Plata', action: () => setTheme('silver') },
-          { label: 'Color: Negro', action: () => setTheme('black') },
-          { label: 'Color: Azul', action: () => setTheme('blue') },
-          { label: 'Color: Púrpura', action: () => setTheme('purple') },
-          { label: 'Color: Dorado', action: () => setTheme('gold') },
-          { label: 'Color: Rosa', action: () => setTheme('pink') }
-        ]
-      }
+      music: { title: 'Música', items: [] }
     };
 
-    // --- EFECTOS DE SONIDO WEB AUDIO API ---
-    let audioCtx = null;
-    function playClickSound() {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.015);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.015);
-      } catch (e) {}
-    }
-
-    function triggerHaptic() {
-      if (navigator.vibrate) navigator.vibrate(10);
-    }
-
-    // --- REPRODUCCIÓN VÍA YOUTUBE ---
-    function onYouTubeIframeAPIReady() {
-      state.player = new YT.Player('youtube-player', {
-        height: '0',
-        width: '0',
-        events: {
-          'onStateChange': onPlayerStateChange
-        }
-      });
-    }
-
-    function onPlayerStateChange(event) {
-      if (event.data === YT.PlayerState.PLAYING) {
-        state.isPlaying = true;
-        document.getElementById('play-status-icon').classList.remove('hidden');
-      } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-        state.isPlaying = false;
-        document.getElementById('play-status-icon').classList.add('hidden');
-        if (event.data === YT.PlayerState.ENDED) nextTrack();
-      }
-      if (state.currentMenu === 'nowPlaying') renderNowPlaying();
-    }
-
-    async function playTrack(index) {
-      if (!state.playlist || state.playlist.length === 0) return;
-      if (index < 0) index = state.playlist.length - 1;
-      if (index >= state.playlist.length) index = 0;
-
-      state.currentTrackIndex = index;
-      const track = state.playlist[index];
-
-      navigateTo('nowPlaying');
-
-      const query = encodeURIComponent(`${track.title} ${track.artist} audio`);
-      try {
-        const res = await fetch(`https://www.youtube.com/results?search_query=${query}`);
-        const html = await res.text();
-        const videoIdMatch = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
-
-        if (videoIdMatch && state.player && state.player.loadVideoById) {
-          state.player.loadVideoById(videoIdMatch[1]);
-        }
-      } catch (e) {
-        console.error('Error buscando track:', e);
-      }
-    }
-
-    function togglePlay() {
-      if (!state.player) return;
-      if (state.isPlaying) {
-        state.player.pauseVideo();
+    function toggleTheme() {
+      const casing = document.getElementById('ipod-case');
+      if (casing.classList.contains('casing-silver')) {
+        casing.className = casing.className.replace('casing-silver', 'casing-black');
       } else {
-        state.player.playVideo();
+        casing.className = casing.className.replace('casing-black', 'casing-silver');
       }
     }
 
-    function nextTrack() {
-      playTrack(state.currentTrackIndex + 1);
-    }
-
-    function prevTrack() {
-      playTrack(state.currentTrackIndex - 1);
-    }
-
-    // --- NAVEGACIÓN Y RENDERIZADO ---
     function navigateTo(menuKey) {
       if (menuKey === 'addSong') {
-        renderAddSongScreen();
+        renderAddSong();
         return;
       }
       state.menuHistory.push({ menu: state.currentMenu, index: state.selectedIndex });
@@ -277,170 +121,129 @@
     }
 
     function renderMenu() {
-      const menu = menus[state.currentMenu];
-      document.getElementById('screen-title').innerText = menu ? menu.title : 'iPod';
+      const titleEl = document.getElementById('screen-title');
       const content = document.getElementById('screen-content');
       content.innerHTML = '';
 
-      let items = menu ? menu.items : [];
+      let items = menus[state.currentMenu] ? menus[state.currentMenu].items : [];
 
-      if (state.currentMenu === 'music' && state.playlist.length > 0) {
+      if (state.currentMenu === 'music') {
+        titleEl.innerText = 'Música';
         items = state.playlist.map((t, i) => ({
           label: `${t.title} - ${t.artist}`,
           action: () => playTrack(i)
         }));
+      } else {
+        titleEl.innerText = menus[state.currentMenu].title;
       }
 
       items.forEach((item, idx) => {
         const div = document.createElement('div');
-        div.className = `px-3 py-1.5 text-xs font-medium flex justify-between items-center cursor-pointer ${
+        div.className = `px-3 py-2 text-xs font-medium flex justify-between items-center rounded ${
           idx === state.selectedIndex ? 'menu-item-selected' : 'text-gray-800'
         }`;
-        div.innerHTML = `
-          <span class="truncate">${item.label}</span>
-          <i class="fas fa-chevron-right text-[9px] opacity-70"></i>
-        `;
+        div.innerHTML = `<span>${item.label}</span><i class="fas fa-chevron-right text-[9px]"></i>`;
         content.appendChild(div);
       });
     }
 
-    function renderAddSongScreen() {
+    function renderAddSong() {
       document.getElementById('screen-title').innerText = 'Añadir canción';
       const content = document.getElementById('screen-content');
       content.innerHTML = `
-        <div class="p-3 text-xs space-y-2">
-          <p class="font-bold text-gray-700">Título de la canción:</p>
-          <input type="text" id="song-title-input" placeholder="Ej. Despacito" 
-                 class="w-full p-1.5 border rounded text-[11px] text-gray-800 bg-white focus:outline-none border-blue-400">
-          <p class="font-bold text-gray-700">Artista:</p>
-          <input type="text" id="song-artist-input" placeholder="Ej. Luis Fonsi" 
-                 class="w-full p-1.5 border rounded text-[11px] text-gray-800 bg-white focus:outline-none border-blue-400">
-          <button id="btn-save-song" class="w-full bg-blue-600 text-white py-1.5 rounded font-bold hover:bg-blue-700 transition mt-1">
-            Guardar en el iPod
-          </button>
+        <div class="p-2 text-xs space-y-2">
+          <p class="font-bold">Título:</p>
+          <input type="text" id="in-title" class="w-full p-1 border rounded text-xs bg-white text-black" placeholder="Ej. Canción">
+          <p class="font-bold">Artista:</p>
+          <input type="text" id="in-artist" class="w-full p-1 border rounded text-xs bg-white text-black" placeholder="Ej. Artista">
+          <p class="font-bold">Enlace MP3 directo:</p>
+          <input type="text" id="in-url" class="w-full p-1 border rounded text-xs bg-white text-black" placeholder="https://...mp3">
+          <button id="btn-save" class="w-full bg-blue-600 text-white py-1.5 rounded font-bold mt-1">Guardar</button>
         </div>
       `;
-
       setTimeout(() => {
-        document.getElementById('btn-save-song').addEventListener('click', () => {
-          const title = document.getElementById('song-title-input').value.trim();
-          const artist = document.getElementById('song-artist-input').value.trim();
-          if (title && artist) {
-            state.playlist.push({ title, artist });
+        document.getElementById('btn-save').onclick = () => {
+          const t = document.getElementById('in-title').value.trim();
+          const a = document.getElementById('in-artist').value.trim();
+          const u = document.getElementById('in-url').value.trim();
+          if (t && a && u) {
+            state.playlist.push({ title: t, artist: a, url: u });
             localStorage.setItem('ipod_playlist', JSON.stringify(state.playlist));
-            alert(`¡"${title}" añadida con éxito!`);
+            alert('¡Guardada con éxito!');
             navigateTo('music');
           } else {
-            alert('Por favor, rellena ambos campos.');
+            alert('Rellena todos los campos.');
           }
-        });
+        };
       }, 50);
+    }
+
+    function playTrack(index) {
+      if (!state.playlist.length) return;
+      if (index < 0) index = state.playlist.length - 1;
+      if (index >= state.playlist.length) index = 0;
+      state.currentTrackIndex = index;
+      const track = state.playlist[index];
+
+      state.audio.src = track.url;
+      state.audio.play().then(() => {
+        state.isPlaying = true;
+      }).catch(e => alert("Error al reproducir el audio. Comprueba que el enlace MP3 sea directo."));
+
+      navigateTo('nowPlaying');
     }
 
     function renderNowPlaying() {
       document.getElementById('screen-title').innerText = 'Reproduciendo';
       const content = document.getElementById('screen-content');
-      const track = state.playlist[state.currentTrackIndex] || { title: 'Sin canción', artist: 'Desconocido' };
-
+      const track = state.playlist[state.currentTrackIndex] || { title: 'Nada', artist: '' };
       content.innerHTML = `
-        <div class="p-3 flex flex-col items-center justify-between h-full text-center">
-          <div class="w-20 h-20 bg-gray-300 rounded shadow-md flex items-center justify-center my-1 bg-gradient-to-tr from-gray-400 to-gray-200">
-            <i class="fas fa-music text-3xl text-gray-600"></i>
+        <div class="p-3 flex flex-col items-center justify-center h-full text-center space-y-3">
+          <div class="w-16 h-16 bg-gradient-to-tr from-gray-400 to-gray-200 rounded shadow flex items-center justify-center">
+            <i class="fas fa-music text-2xl text-gray-600"></i>
           </div>
-          <div class="w-full px-2">
-            <p class="font-bold text-xs truncate text-gray-900">${track.title}</p>
-            <p class="text-[11px] text-gray-600 truncate">${track.artist}</p>
-          </div>
-          <div class="w-full space-y-1 my-1">
-            <div class="w-full bg-gray-300 h-1.5 rounded-full overflow-hidden">
-              <div class="bg-blue-600 h-full w-1/3"></div>
-            </div>
-            <div class="flex justify-between text-[9px] text-gray-500">
-              <span>Reproduciendo</span>
-              <span>YouTube Audio</span>
-            </div>
-          </div>
+          <p class="font-bold text-xs truncate w-full text-black">${track.title}</p>
+          <p class="text-[11px] text-gray-600 truncate w-full">${track.artist}</p>
+          <p class="text-[10px] text-blue-600 font-semibold">${state.isPlaying ? '▶ Reproduciendo...' en : '⏸ En pausa'}</p>
         </div>
       `;
     }
 
-    function setTheme(color) {
-      state.theme = color;
-      document.getElementById('ipod-case').className = `casing-${color} w-[340px] h-[580px] rounded-[38px] p-6 flex flex-col justify-between shadow-2xl relative border border-white/20 transition-all duration-300`;
+    // --- CONTROLES ---
+    function moveSelection(dir) {
+      const itemsCount = state.currentMenu === 'music' ? state.playlist.length : menus[state.currentMenu].items.length;
+      if (itemsCount === 0) return;
+      state.selectedIndex += dir;
+      if (state.selectedIndex < 0) state.selectedIndex = itemsCount - 1;
+      if (state.selectedIndex >= itemsCount) state.selectedIndex = 0;
+      renderScreen();
     }
 
-    // --- CONTROLES DE LA RUEDA ---
-    let startAngle = 0;
-    const wheel = document.getElementById('click-wheel');
-
-    wheel.addEventListener('touchstart', (e) => {
-      const rect = wheel.getBoundingClientRect();
-      const touch = e.touches[0];
-      startAngle = Math.atan2(touch.clientY - (rect.top + rect.height/2), touch.clientX - (rect.left + rect.width/2));
-    });
-
-    wheel.addEventListener('touchmove', (e) => {
-      const rect = wheel.getBoundingClientRect();
-      const touch = e.touches[0];
-      const currentAngle = Math.atan2(touch.clientY - (rect.top + rect.height/2), touch.clientX - (rect.left + rect.width/2));
-      const diff = currentAngle - startAngle;
-
-      if (Math.abs(diff) > 0.4) {
-        playClickSound();
-        triggerHaptic();
-
-        const menu = menus[state.currentMenu];
-        const maxIndex = (state.currentMenu === 'music' && state.playlist.length > 0) ? state.playlist.length - 1 : (menu ? menu.items.length - 1 : 0);
-
-        if (diff > 0) {
-          state.selectedIndex = Math.min(state.selectedIndex + 1, maxIndex);
-        } else {
-          state.selectedIndex = Math.max(state.selectedIndex - 1, 0);
-        }
-        renderScreen();
-        startAngle = currentAngle;
+    document.getElementById('btn-menu').onclick = () => goBack();
+    document.getElementById('btn-next').onclick = () => moveSelection(1);
+    document.getElementById('btn-prev').onclick = () => moveSelection(-1);
+    document.getElementById('btn-play').onclick = () => {
+      if (state.audio.paused) {
+        state.audio.play();
+        state.isPlaying = true;
+      } else {
+        state.audio.pause();
+        state.isPlaying = false;
       }
-    });
+      if (state.currentMenu === 'nowPlaying') renderNowPlaying();
+    };
 
-    document.getElementById('btn-center').addEventListener('click', () => {
-      playClickSound();
-      triggerHaptic();
-
-      if (state.currentMenu === 'addSong') return;
-
-      const menu = menus[state.currentMenu];
-      if (state.currentMenu === 'music' && state.playlist.length > 0) {
+    document.getElementById('btn-center').onclick = () => {
+      if (state.currentMenu === 'music') {
         playTrack(state.selectedIndex);
-      } else if (menu && menu.items[state.selectedIndex]) {
-        menu.items[state.selectedIndex].action();
+      } else {
+        const menu = menus[state.currentMenu];
+        if (menu && menu.items[state.selectedIndex]) {
+          menu.items[state.selectedIndex].action();
+        }
       }
-    });
+    };
 
-    document.getElementById('btn-menu').addEventListener('click', () => {
-      playClickSound();
-      triggerHaptic();
-      goBack();
-    });
-
-    document.getElementById('btn-play').addEventListener('click', () => {
-      playClickSound();
-      triggerHaptic();
-      togglePlay();
-    });
-
-    document.getElementById('btn-next').addEventListener('click', () => {
-      playClickSound();
-      triggerHaptic();
-      nextTrack();
-    });
-
-    document.getElementById('btn-prev').addEventListener('click', () => {
-      playClickSound();
-      triggerHaptic();
-      prevTrack();
-    });
-
-    // Inicialización
     renderScreen();
   </script>
 </body>
